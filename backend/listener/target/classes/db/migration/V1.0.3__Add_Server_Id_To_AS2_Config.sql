@@ -1,0 +1,2 @@
+ALTER TABLE as2_config
+ADD COLUMN server_id VARCHAR(255) NOT NULL DEFAULT 'MiddlewareAS2Server'; 

@@ -1,0 +1,23 @@
+CREATE TABLE as2_config (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    client_id BIGINT NOT NULL,
+    interface_id BIGINT NOT NULL,
+    partner_id VARCHAR(255) NOT NULL,
+    local_id VARCHAR(255) NOT NULL,
+    api_name VARCHAR(50) NOT NULL DEFAULT 'SERVER',
+    encryption_algorithm VARCHAR(50) NOT NULL DEFAULT 'AES256',
+    signature_algorithm VARCHAR(50) NOT NULL DEFAULT 'SHA256',
+    compression BOOLEAN NOT NULL DEFAULT true,
+    mdn_mode VARCHAR(50) NOT NULL DEFAULT 'SYNC',
+    mdn_digest_algorithm VARCHAR(50) NOT NULL DEFAULT 'SHA256',
+    encrypt_message BOOLEAN NOT NULL DEFAULT true,
+    sign_message BOOLEAN NOT NULL DEFAULT true,
+    request_mdn BOOLEAN NOT NULL DEFAULT true,
+    mdn_url VARCHAR(255),
+    active BOOLEAN DEFAULT true,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (client_id) REFERENCES clients(id),
+    FOREIGN KEY (interface_id) REFERENCES interfaces(id),
+    UNIQUE KEY unique_client_interface (client_id, interface_id)
+); 

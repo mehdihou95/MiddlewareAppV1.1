@@ -1,0 +1,180 @@
+# Server Configuration
+server:
+  port: 8080
+
+# H2 Database Configuration
+spring:
+  datasource:
+    url: jdbc:h2:file:./data/middleware;AUTO_SERVER=TRUE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: 
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+      settings:
+        web-allow-others: true
+  
+  # JPA Configuration
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  
+  # Flyway Configuration
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+    baseline-version: 0
+  
+  # File Upload Configuration
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+  
+  # Redis Configuration (for distributed token blacklist and rate limiting)
+  redis:
+    host: ${REDIS_HOST:localhost}
+    port: ${REDIS_PORT:6379}
+    password: ${REDIS_PASSWORD:}
+  
+  # Session Configuration
+  session:
+    store-type: redis
+    redis:
+      namespace: xml-processor:session
+    timeout: 1800  # 30 minutes
+
+# JWT Configuration
+application:
+  security:
+    jwt:
+      secret-key: ${JWT_SECRET_KEY:404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970}
+      expiration: 3600000  # 1 hour in milliseconds
+      refresh-token:
+        expiration: 604800000  # 7 days in milliseconds
+
+# Security Configuration
+security:
+  csrf:
+    enabled: true
+    cookie-name: XSRF-TOKEN
+    header-name: X-XSRF-TOKEN
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000}
+    allowed-methods: GET,POST,PUT,DELETE,OPTIONS
+    allowed-headers: Authorization,Content-Type,X-XSRF-TOKEN
+    allow-credentials: true
+
+# CORS Configuration
+app:
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000}
+    allowed-methods: GET,POST,PUT,DELETE,OPTIONS
+    allowed-headers: Authorization,Content-Type,X-XSRF-TOKEN
+    allow-credentials: true
+  security:
+    token-blacklist: in-memory
+
+# XML Validation Configuration
+xml:
+  validation:
+    entity-expansion-limit: ${XML_ENTITY_EXPANSION_LIMIT:0}  # 0 for unlimited
+    honour-all-schema-locations: true
+    enable-external-dtd: false
+    enable-external-schema: false
+    enable-schema-full-checking: false
+    max-memory-size: 10485760  # 10MB in bytes
+
+# Logging Configuration
+logging:
+  level:
+    root: INFO
+    com.middleware.processor: DEBUG
+    com.middleware.processor.service: DEBUG
+    com.middleware.processor.service.impl: DEBUG
+    com.middleware.processor.service.strategy: DEBUG
+    com.middleware.processor.service.impl.XmlValidationServiceImpl: DEBUG
+    com.middleware.processor.service.impl.XmlProcessorServiceImpl: DEBUG
+    com.middleware.processor.service.strategy.AsnDocumentProcessingStrategy: DEBUG
+    com.middleware.processor.service.strategy.XmlProcessingStrategy: DEBUG
+    org.springframework.web.multipart: DEBUG
+    org.springframework.security: TRACE
+    org.springframework.web: DEBUG
+    org.springframework.transaction: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql: TRACE
+    com.middleware.processor.config.CsrfTokenLoggingFilter: TRACE
+    org.springframework.security.web.csrf: TRACE
+    javax.xml.validation: TRACE
+    org.xml.sax: TRACE
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/application.log
+    max-size: 10MB
+    max-history: 7
+  logback:
+    rollingpolicy:
+      max-file-size: 10MB
+      max-history: 7
+      file-name-pattern: logs/archived/application.%d{yyyy-MM-dd}.%i.log.gz
+
+# Actuator Configuration
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: when_authorized
+      roles: ADMIN
+    prometheus:
+      enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name:xml-processor}
+    export:
+      prometheus:
+        enabled: true
+  health:
+    defaults:
+      enabled: true
+    rabbitmq:
+      enabled: true
+    db:
+      enabled: true
+
+# Profile-specific configuration
+config:
+  activate:
+    on-profile: docker
+
+# Database Configuration
+datasource:
+  url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/middleware}
+  driver-class-name: org.postgresql.Driver
+  username: ${SPRING_DATASOURCE_USERNAME:admin}
+  password: ${SPRING_DATASOURCE_PASSWORD:admin}
+
+# RabbitMQ Configuration
+rabbitmq:
+  host: ${SPRING_RABBITMQ_HOST:localhost}
+  port: 5672
+  username: ${SPRING_RABBITMQ_USERNAME:admin}
+  password: ${SPRING_RABBITMQ_PASSWORD:admin}
+  listener:
+    simple:
+      retry:
+        enabled: true
+        initial-interval: 2000
+        max-attempts: 3
+        multiplier: 1.5 

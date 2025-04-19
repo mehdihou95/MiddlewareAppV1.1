@@ -1,0 +1,85 @@
+{
+  "rabbit_version": "3.12.0",
+  "users": [
+    {
+      "name": "admin",
+      "password_hash": "admin",
+      "hashing_algorithm": "rabbit_password_hashing_sha256",
+      "tags": ["administrator"]
+    }
+  ],
+  "vhosts": [
+    {
+      "name": "/"
+    }
+  ],
+  "permissions": [
+    {
+      "user": "admin",
+      "vhost": "/",
+      "configure": ".*",
+      "write": ".*",
+      "read": ".*"
+    }
+  ],
+  "exchanges": [
+    {
+      "name": "middleware.direct",
+      "vhost": "/",
+      "type": "direct",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    },
+    {
+      "name": "middleware.topic",
+      "vhost": "/",
+      "type": "topic",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    }
+  ],
+  "queues": [
+    {
+      "name": "inbound.processor",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-message-ttl": 86400000,
+        "x-dead-letter-exchange": "middleware.dlx"
+      }
+    },
+    {
+      "name": "outbound.dispatcher",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-message-ttl": 86400000,
+        "x-dead-letter-exchange": "middleware.dlx"
+      }
+    }
+  ],
+  "bindings": [
+    {
+      "source": "middleware.direct",
+      "vhost": "/",
+      "destination": "inbound.processor",
+      "destination_type": "queue",
+      "routing_key": "inbound.processor",
+      "arguments": {}
+    },
+    {
+      "source": "middleware.direct",
+      "vhost": "/",
+      "destination": "outbound.dispatcher",
+      "destination_type": "queue",
+      "routing_key": "outbound.dispatcher",
+      "arguments": {}
+    }
+  ]
+} 

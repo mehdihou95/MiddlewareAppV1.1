@@ -1,0 +1,13 @@
+com\middleware\listener\connectors\sftp\model\SftpConfig.class
+com\middleware\listener\model\Interface.class
+com\middleware\listener\connectors\as2\config\As2CamelConfig$1.class
+com\middleware\listener\model\Client.class
+com\middleware\listener\config\QueueConfig.class
+com\middleware\listener\connectors\api\config\ApiCamelConfig$1.class
+com\middleware\listener\connectors\as2\config\As2Properties.class
+com\middleware\listener\connectors\api\config\ApiProperties.class
+com\middleware\listener\service\CleanupService.class
+com\middleware\listener\connectors\api\config\ApiCamelConfig.class
+com\middleware\listener\connectors\as2\config\As2CamelConfig.class
+com\middleware\listener\connectors\sftp\config\SftpProperties.class
+com\middleware\listener\connectors\sftp\model\SftpConfig$1.class
